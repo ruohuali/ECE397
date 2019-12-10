@@ -68,6 +68,7 @@ def getSteadyState(sig):
 
 
 # %%
+#set up training set
 #get the current workspace's abs path
 path = os.getcwd()
 print("workspace: " + path)
@@ -128,11 +129,11 @@ for file in traits_path:
                 fs,audio = wavfile.read('traits/' + file) #load the data
                 if audio.ndim > 1:
                     audio = audio[:,0] 
-                std_dev = np.var(audio)
+                var = np.var(audio)
                 for j in range(len(cats)):
                     if cats[j] == each_cat[i]:
-                        ene_traits[j].append(std_dev)
-                        print(file + " has std_dev ", std_dev)
+                        ene_traits[j].append(var)
+                        print(file + " has var ", var)
 #calc averages
 np.asarray(ene_traits)
 ene_traits_num = np.zeros(len(ene_traits))
@@ -182,9 +183,9 @@ for i in range(len(types)):
         AUD = normalize(AUD)
         all_FFTs[i][j] = AUD
         
-        plt.figure()
-        plt.plot(all_FFTs[i][j])
-        plt.title("type-" + types[i] + str(j))
+        # plt.figure()
+        # plt.plot(all_FFTs[i][j])
+        # plt.title("type-" + types[i] + str(j))
                   
 print("FFT completed")
 
@@ -212,10 +213,10 @@ load_labels = np.load("labels.npy")
 load_set = np.load("train_set.npy")
 
 print(load_labels)
-for i in range(len(load_set)):
-    plt.figure()
-    plt.plot(load_set[i])
-    plt.title("type--"+ load_labels[i])
+# for i in range(len(load_set)):
+    # plt.figure()
+    # plt.plot(load_set[i])
+    # plt.title("type--"+ load_labels[i])
 
 
 # %%
@@ -261,8 +262,6 @@ def setupInput(input,fs):
 
 
 # %%
-import numpy as np
-
 def harmonic_in_instrument(harmonic, instrument_spec):
     threshold = 11 #10.5 current best       # this constant requires further modification
 #     print(type(harmonic))
@@ -292,7 +291,6 @@ within this file -- the unrevised staff files will be used for all other
 files and classes when code is run, so be careful to not modify anything else.
 """
 # import nltk
-import numpy as np
 from math import log
 
 def naiveBayes(train_set, train_labels, dev_set, test_sig):
@@ -453,7 +451,6 @@ import sys
 import argparse
 import configparser
 import copy
-import numpy as np
 
 # import reader
 # import naive_bayes as nb
@@ -473,7 +470,7 @@ def compute_accuracies(predicted_labels, dev_set, dev_labels):
 
 
 def main():
-    print("inside")
+    print("start test")
     train_set = np.load("train_set.npy")
     train_labels = np.load("labels.npy")
 
@@ -493,7 +490,8 @@ def main():
             if test_sig.ndim > 1:
                 test_sig = test_sig[:,0]            
             test_FFT = setupInput(test_sig,fs)
-            print("read " + test + "==========================")
+            print("===============================")
+            print("read " + test)
 #             print("start testing")    
             predicted_labels = naiveBayes(train_set, train_labels, test_FFT, test_sig)
             print(predicted_labels)
@@ -534,19 +532,3 @@ def main():
 
 
 main()
-    
-
-
-
-# %%
-#time-domain
-aud_path = os.listdir(path + '/audios')
-for file in aud_path:
-    print("loading in: " + file)
-    audio = np.array([])
-    fs,audio = wavfile.read('audios/' + file) #load the data
-    audio = audio[:,0]
-    plt.figure(figsize=(12,5))
-    plt.plot(audio,"b", alpha = 0.1)
-    plt.title(file)
-
